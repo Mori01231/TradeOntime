@@ -2,6 +2,7 @@ name: TradeOntime
 version: ${project.version}
 main: com.github.mori01231.tradeontime.TradeOntime
 description: Trade ontime for items
+depend: [PlayerPoints]
 
 commands:
   tradeontime:
