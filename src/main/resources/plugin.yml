@@ -1,0 +1,5 @@
+name: TradeOntime
+version: ${project.version}
+main: com.github.mori01231.tradeontime.TradeOntime
+api-version: 1.15
+description: Trade ontime for items
