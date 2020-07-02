@@ -29,8 +29,16 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                 String originalOutput;
                 String pointsholder = "";
 
-                int points = Integer.parseInt(args[0]);
+                int points = 0;
                 int haspoints;
+                try{
+                    points = Integer.parseInt(args[0]);
+                }catch(NullPointerException e){
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するポイント数は正の整数で指定してください。"));
+                    return false;
+                }
+
+
 
                 if (points < 0){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するポイント数は正の整数で指定してください。"));
