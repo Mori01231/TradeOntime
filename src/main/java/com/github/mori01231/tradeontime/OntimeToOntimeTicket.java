@@ -78,7 +78,7 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&3&l" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
                 }
                 else{
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下の10以上の整数で指定してください。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下かつ10以上の整数で指定してください。"));
                     return false;
                 }
                 /*
