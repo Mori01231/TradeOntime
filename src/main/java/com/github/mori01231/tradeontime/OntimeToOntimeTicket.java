@@ -33,7 +33,7 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                 int haspoints;
                 try{
                     points = Integer.parseInt(args[0]);
-                }catch(NullPointerException e){
+                }catch(Exception e){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するポイント数は正の整数で指定してください。"));
                     return false;
                 }
