@@ -64,6 +64,11 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                 // You can then reset the message buffer with the following and re-use the the cmdRunner to run more commands - or just let all the outputs concatenate together
                 cmdRunner.clearMessageLog();
 
+                if (haspoints < 10){
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが10未満のためオンタイムチケットへの変換が出来ません。"));
+                    return false;
+                }
+
                 if (points <= haspoints){
                     int takepoints = points - (points % 10);
                     System.out.println(takepoints);
