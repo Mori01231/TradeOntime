@@ -1,6 +1,6 @@
 package com.github.mori01231.tradeontime;
 
-import org.black_ixx.playerpoints.PlayerPoints;
+//import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +13,7 @@ public final class TradeOntime extends JavaPlugin {
     public static TradeOntime getInstance() {
         return instance;
     }
-
+/*
     private PlayerPoints playerPoints;
 
     // Validate that we have access to PlayerPoints
@@ -28,14 +28,14 @@ public final class TradeOntime extends JavaPlugin {
     public PlayerPoints getPlayerPoints() {
         return playerPoints;
     }
-
+*/
 
     @Override
     public void onEnable() {
         getLogger().info("BetaTest has been enabled.");
         this.getCommand("tradeontime").setExecutor(new OntimeToOntimeTicket());
 
-        hookPlayerPoints();
+        //hookPlayerPoints();
 
         this.saveDefaultConfig();
     }

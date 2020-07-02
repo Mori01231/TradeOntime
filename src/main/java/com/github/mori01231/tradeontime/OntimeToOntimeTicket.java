@@ -1,6 +1,8 @@
 package com.github.mori01231.tradeontime;
 
 import com.github.mori01231.tradeontime.utils.GetOpenInventorySlots;
+import com.github.mori01231.tradeontime.utils.MessageInterceptingCommandRunner;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,6 +30,17 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
 
+                final MessageInterceptingCommandRunner cmdRunner = new MessageInterceptingCommandRunner(Bukkit.getConsoleSender());
+                Bukkit.dispatchCommand(cmdRunner, "points take " + PlayerName + " " + points );
+
+                // TODO: do something useful with the captured messages
+
+                System.out.println(cmdRunner.getMessageLogStripColor());
+
+                // You can then reset the message buffer with the following and re-use the the cmdRunner to run more commands - or just let all the outputs concatenate together
+                cmdRunner.clearMessageLog();
+
+                /*
                 if (TradeOntime.getInstance().getPlayerPoints().getAPI().take(PlayerName, points)) {
                     //Success
                     getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + player.getName() + " " + MMItemName + " " + points);
@@ -37,6 +50,8 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                     //Failed, probably not enough points
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&3&lポイントが足りません。"));
                 }
+                */
+
             }
             else if(args.length == 0){
 
