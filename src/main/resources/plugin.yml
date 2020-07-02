@@ -8,7 +8,7 @@ commands:
   tradeontime:
     description: オンタイムポイントをオンタイムチケットに変換する
     permission: tradeontime.tradeontime
-    usage: /tradeontime ポイント数 でオンタイムポイントをオンタイムチケットに変換できます
+    usage: 例：/tradeontime ポイント数
 
 permissions:
   tradeontime.*:

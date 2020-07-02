@@ -26,20 +26,53 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 String PlayerName = player.getName();
 
+                String originalOutput;
+                String pointsholder = "";
+
                 int points = Integer.parseInt(args[0]);
+                int haspoints;
+
+                if (points < 0){
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するポイント数は正の整数で指定してください。"));
+                    return false;
+                }
 
                 String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
 
                 final MessageInterceptingCommandRunner cmdRunner = new MessageInterceptingCommandRunner(Bukkit.getConsoleSender());
-                Bukkit.dispatchCommand(cmdRunner, "points take " + PlayerName + " " + points );
+                Bukkit.dispatchCommand(cmdRunner, "points look " + PlayerName);
 
-                // TODO: do something useful with the captured messages
 
-                System.out.println(cmdRunner.getMessageLogStripColor());
+                originalOutput = cmdRunner.getMessageLogStripColor();
+
+
+                originalOutput = originalOutput.replace("\n", "").replace("\r", "");
+
+                pointsholder = originalOutput.substring(27 + PlayerName.length());
+
+
+                haspoints = Integer.parseInt(pointsholder.substring(0, pointsholder.length() - 7));
 
                 // You can then reset the message buffer with the following and re-use the the cmdRunner to run more commands - or just let all the outputs concatenate together
                 cmdRunner.clearMessageLog();
 
+                if (points <= haspoints){
+                    int takepoints = points - (points % 10);
+                    System.out.println(takepoints);
+                    if(takepoints == 0){
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは10以上の整数で指定してください。"));
+                        return false;
+                    }
+                    int giveitems = takepoints/10;
+                    getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                    getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                    getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&3&l" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
+                }
+                else{
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下の10以上の整数で指定してください。"));
+                    return false;
+                }
                 /*
                 if (TradeOntime.getInstance().getPlayerPoints().getAPI().take(PlayerName, points)) {
                     //Success
@@ -54,11 +87,12 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
             }
             else if(args.length == 0){
-
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するポイント数は正の整数で指定してください。"));
+                return false;
             }
         }
         else{
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&3&lこのコマンドはコンソールからは実行できません"));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lこのコマンドはコンソールからは実行できません"));
         }
 
 
