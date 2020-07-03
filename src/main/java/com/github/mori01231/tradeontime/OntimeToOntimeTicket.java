@@ -8,6 +8,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
@@ -16,8 +18,34 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
     public GetOpenInventorySlots GetSlots;
 
+    public int AvailableSlots(Player player){
+        //get player inventory.
+        Inventory inv = player.getInventory();
+
+        //initializing counter for slots.
+        int slots=0;
+
+        //counting the number of available slots.
+        for (ItemStack item: inv.getContents()) {
+            if(item == null) {
+                slots++;
+            }
+        }
+
+        for (ItemStack item: player.getInventory().getArmorContents()){
+            if(item == null) {
+                slots--;
+            }
+        }
+
+
+        //return the number of available slots.
+        return slots;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
 
         if (sender instanceof Player){
             if(args.length == 1) {
@@ -77,6 +105,21 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                         return false;
                     }
                     int giveitems = takepoints/10;
+
+                    int RequiredSlots = 100;
+                    if (giveitems % 64 == 0){
+                        RequiredSlots = giveitems / 64;
+                    }else{
+                        RequiredSlots = (giveitems - (giveitems % 64) + 64) / 64;
+                    }
+
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあります。"));
+
+                    if (AvailableSlots(player) < RequiredSlots){
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
+                        return false;
+                    }
+
                     getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
                     getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
                     getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
