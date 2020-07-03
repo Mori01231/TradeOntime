@@ -4,6 +4,7 @@ import com.github.mori01231.tradeontime.utils.GetOpenInventorySlots;
 import com.github.mori01231.tradeontime.utils.MessageInterceptingCommandRunner;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -30,6 +31,10 @@ public class OntimeToOntimeTicket implements CommandExecutor {
             if(item == null) {
                 slots++;
             }
+        }
+
+        if(player.getInventory().getItemInOffHand().getType() == Material.AIR){
+            slots--;
         }
 
         for (ItemStack item: player.getInventory().getArmorContents()){
