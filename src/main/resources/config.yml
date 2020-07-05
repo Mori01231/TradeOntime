@@ -2,3 +2,5 @@
 
 #オンタイムチケットのMythicMobsにおけるアイテム名。空白の場合オンタイムポイントをオンタイムチケットに変換できなくなります。
 MythicMobsItemName: ontime_ticket
+
+MythicMobsDisplayName: §aオンタイムチケット
