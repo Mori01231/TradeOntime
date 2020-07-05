@@ -17,8 +17,8 @@ public final class TradeOntime extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("BetaTest has been enabled.");
-        this.getCommand("tradeontime").setExecutor(new OntimeToOntimeTicket());
-        this.getCommand("tradeticket").setExecutor(new OntimeTicketToOntime());
+        this.getCommand("ontimetoticket").setExecutor(new OntimeToOntimeTicket());
+        this.getCommand("tickettoontime").setExecutor(new OntimeTicketToOntime());
 
 
         this.saveDefaultConfig();
