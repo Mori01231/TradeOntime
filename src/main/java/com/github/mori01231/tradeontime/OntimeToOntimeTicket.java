@@ -118,7 +118,7 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 //If the players doesn't have enough slots, no transaction
                 if (AvailableSlots(player) < RequiredSlots) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player)*64 + "ポイントまでしか変換できません。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player)*640 + "ポイントまでしか変換できません。"));
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
                     return false;
                 }
