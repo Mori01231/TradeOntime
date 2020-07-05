@@ -27,8 +27,6 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                 Player player = (Player) sender;
                 String PlayerName = player.getName();
                 String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
-                String originalOutput;
-                String pointsholder = "";
 
                 int points = 0;
                 int haspoints;
@@ -45,18 +43,7 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                     return false;
                 }
 
-                //Get the points of the player.
-                final MessageInterceptingCommandRunner cmdRunner = new MessageInterceptingCommandRunner(Bukkit.getConsoleSender());
-                Bukkit.dispatchCommand(cmdRunner, "points look " + PlayerName);
-
-                //parse the returned string and make it a single integer of points
-                originalOutput = cmdRunner.getMessageLogStripColor();
-                originalOutput = originalOutput.replace("\n", "").replace("\r", "");
-                pointsholder = originalOutput.substring(27 + PlayerName.length());
-                haspoints = Integer.parseInt(pointsholder.substring(0, pointsholder.length() - 7));
-
-                // You can then reset the message buffer with the following and re-use the the cmdRunner to run more commands - or just let all the outputs concatenate together
-                cmdRunner.clearMessageLog();
+                haspoints = PlayerPoints(player);
 
                 //points was less than 10
                 if (haspoints < 10){
@@ -105,8 +92,42 @@ public class OntimeToOntimeTicket implements CommandExecutor {
             }
             //No points argument
             else if(args.length == 0){
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するポイント数は正の整数で指定してください。"));
-                return false;
+                Player player = (Player) sender;
+                String PlayerName = player.getName();
+                String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
+
+                int haspoints = PlayerPoints(player);
+
+                int takepoints = haspoints - (haspoints % 10);
+                System.out.println(takepoints);
+
+                //points was between 0 and 10
+                if(takepoints == 0){
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが10未満のためオンタイムチケットへの変換が出来ません。"));
+                    return false;
+                }
+
+                int giveitems = takepoints/10;
+                int RequiredSlots = 100;
+
+                if (giveitems % 64 == 0){
+                    RequiredSlots = giveitems / 64;
+                }else{
+                    RequiredSlots = (giveitems - (giveitems % 64) + 64) / 64;
+                }
+
+                //If the players doesn't have enough slots, no transaction
+                if (AvailableSlots(player) < RequiredSlots) {
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player)*64 + "ポイントまでしか変換できません。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
+                    return false;
+                }
+
+                //Actual transaction
+                getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&3&l" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
             }
         }
         //Can't convert tickets from console
@@ -146,5 +167,31 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
         //return the number of available slots.
         return slots;
+    }
+
+    public int PlayerPoints(Player player){
+
+        String PlayerName = player.getName();
+        String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
+        String originalOutput;
+        String pointsholder = "";
+
+        int points = 0;
+        int haspoints;
+
+        //Get the points of the player.
+        final MessageInterceptingCommandRunner cmdRunner = new MessageInterceptingCommandRunner(Bukkit.getConsoleSender());
+        Bukkit.dispatchCommand(cmdRunner, "points look " + PlayerName);
+
+        //parse the returned string and make it a single integer of points
+        originalOutput = cmdRunner.getMessageLogStripColor();
+        originalOutput = originalOutput.replace("\n", "").replace("\r", "");
+        pointsholder = originalOutput.substring(27 + PlayerName.length());
+        haspoints = Integer.parseInt(pointsholder.substring(0, pointsholder.length() - 7));
+
+        // You can then reset the message buffer with the following and re-use the the cmdRunner to run more commands - or just let all the outputs concatenate together
+        cmdRunner.clearMessageLog();
+
+        return haspoints;
     }
 }
