@@ -5,26 +5,26 @@ description: Trade ontime for items
 depend: [PlayerPoints]
 
 commands:
-  tradeontime:
+  ontimetoticket:
     description: オンタイムポイントをオンタイムチケットに変換する
-    aliases: [to]
-    permission: tradeontime.tradeontime
-    usage: 例：/tradeontime ポイント数
-  tradeticket:
+    aliases: [ott]
+    permission: tradeontime.ontimetoticket
+    usage: 例：/ontimetoticket ポイント数
+  tickettoontime:
     description: 所持している全チケットをオンタイムポイントに変換する。
-    aliases: [tt]
-    permission: tradeontime.tradeticket
-    usage: 例：/tradeticket
+    aliases: [tto]
+    permission: tradeontime.tickettoontime
+    usage: 例：/tickettoontime
 
 permissions:
   tradeontime.*:
     description: 全tradeontimeコマンドへのアクセス権限
     children:
-      tradeontime.tradeontime: true
-      tradeontime.tradeticket: true
-  tradeontime.tradeontime:
+      tradeontime.ontimetoticket: true
+      tradeontime.tickettoontime: true
+  tradeontime.ontimetoticket:
     description: オンタイムポイントをオンタイムチケットに変換することが可能になる。
     default: true
-  tradeontime.tradeticket:
+  tradeontime.tickettoontime:
     description: オンタイムチケットをオンタイムポイントに変換することが可能になる。
     default: true
