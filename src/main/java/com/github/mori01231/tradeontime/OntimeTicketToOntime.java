@@ -116,7 +116,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
         getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
 
         //Create the message to be sent to the player
-        String ReturnMessage = "&b&lオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+        String ReturnMessage = "&bオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
 
         //Return the message to be sent to the player
         return ReturnMessage;
@@ -164,7 +164,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
             getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
 
             //Create the message to be sent to the player
-            ReturnMessage = "オンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+            ReturnMessage = "&bオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
 
             //Return the message to be sent to the player
             return ReturnMessage;
