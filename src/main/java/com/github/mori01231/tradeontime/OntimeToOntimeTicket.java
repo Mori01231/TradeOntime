@@ -1,6 +1,5 @@
 package com.github.mori01231.tradeontime;
 
-import com.github.mori01231.tradeontime.utils.GetOpenInventorySlots;
 import com.github.mori01231.tradeontime.utils.MessageInterceptingCommandRunner;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,36 +16,6 @@ import static org.bukkit.Bukkit.getServer;
 
 public class OntimeToOntimeTicket implements CommandExecutor {
 
-    public GetOpenInventorySlots GetSlots;
-
-    public int AvailableSlots(Player player){
-        //get player inventory.
-        Inventory inv = player.getInventory();
-
-        //initializing counter for slots.
-        int slots=0;
-
-        //counting the number of available slots.
-        for (ItemStack item: inv.getContents()) {
-            if(item == null) {
-                slots++;
-            }
-        }
-
-        if(player.getInventory().getItemInOffHand().getType() == Material.AIR){
-            slots--;
-        }
-
-        for (ItemStack item: player.getInventory().getArmorContents()){
-            if(item == null) {
-                slots--;
-            }
-        }
-
-
-        //return the number of available slots.
-        return slots;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -118,9 +87,10 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                         RequiredSlots = (giveitems - (giveitems % 64) + 64) / 64;
                     }
 
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあります。"));
+
 
                     if (AvailableSlots(player) < RequiredSlots){
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあります。"));
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
                         return false;
                     }
@@ -155,8 +125,37 @@ public class OntimeToOntimeTicket implements CommandExecutor {
         else{
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lこのコマンドはコンソールからは実行できません"));
         }
-
-
         return true;
+    }
+
+
+    //get amount of available slots in player inventory excluding armor and offhand
+    public int AvailableSlots(Player player){
+        //get player inventory.
+        Inventory inv = player.getInventory();
+
+        //initializing counter for slots.
+        int slots=0;
+
+        //counting the number of available slots.
+        for (ItemStack item: inv.getContents()) {
+            if(item == null) {
+                slots++;
+            }
+        }
+
+        if(player.getInventory().getItemInOffHand().getType() == Material.AIR){
+            slots--;
+        }
+
+        for (ItemStack item: player.getInventory().getArmorContents()){
+            if(item == null) {
+                slots--;
+            }
+        }
+
+
+        //return the number of available slots.
+        return slots;
     }
 }
