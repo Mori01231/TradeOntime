@@ -36,7 +36,12 @@ public class OntimeTicketToOntime implements CommandExecutor {
                 //Player has at least 1 ontime ticket in their inventory
                 if(OntimeTickets(player) > 0){
                     Integer ConvertTickets = Integer.valueOf(args[0]);
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', ConvertNumberOfOntimeTickets(player, ConvertTickets)));
+                    //Player doesn't have enough tickets
+                    if (OntimeTickets(player) < ConvertTickets){
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットが足りません。" + ConvertTickets + "枚以上のオンタイムチケットをインベントリに入れてください。"));
+                    }else{
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', ConvertNumberOfOntimeTickets(player, ConvertTickets)));
+                    }
                 }
                 //Player has no ontime tickets in their inventory
                 else{
