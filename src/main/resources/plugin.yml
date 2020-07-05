@@ -26,5 +26,5 @@ permissions:
     description: オンタイムポイントをオンタイムチケットに変換することが可能になる。
     default: true
   tradeontime.tradeticket:
-    description: オンタイムポイントをオンタイムチケットに変換することが可能になる。
+    description: オンタイムチケットをオンタイムポイントに変換することが可能になる。
     default: true
