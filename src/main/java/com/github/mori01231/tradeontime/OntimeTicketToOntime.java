@@ -24,12 +24,24 @@ public class OntimeTicketToOntime implements CommandExecutor {
             if(args.length == 0) {
                 //Player has at least 1 ontime ticket in their inventory
                 if(OntimeTickets(player) > 0){
-                    ConvertOntimeTickets(player);
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', ConvertOntimeTickets(player)));
+                }
+                //Player has no ontime tickets in their inventory
+                else{
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lインベントリに変換したいオンタイムチケットを入れてください。"));
                 }
             }
             //Convert ontime tickets in inventory to ontime points up until the given number.
             else{
-
+                //Player has at least 1 ontime ticket in their inventory
+                if(OntimeTickets(player) > 0){
+                    Integer ConvertTickets = Integer.valueOf(args[0]);
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', ConvertNumberOfOntimeTickets(player, ConvertTickets)));
+                }
+                //Player has no ontime tickets in their inventory
+                else{
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lインベントリに変換したいオンタイムチケットを入れてください。"));
+                }
             }
 
         }
@@ -98,7 +110,59 @@ public class OntimeTicketToOntime implements CommandExecutor {
         //Give player ontime points.
         getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
 
+        //Create the message to be sent to the player
+        String ReturnMessage = "&b&lオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+
         //Return the message to be sent to the player
-        return "オンタイムチケットを" + tickets + "枚オンタイムポイントに変換しました。";
+        return ReturnMessage;
+    }
+
+    public String ConvertNumberOfOntimeTickets(Player player, Integer ConvertTickets){
+
+        //get display name of ontime ticket
+        String MMDisplayName = TradeOntime.getInstance().getConfig().getString("MythicMobsDisplayName");
+
+        //get player inventory.
+        Inventory inv = player.getInventory();
+
+        //initializing counter for tickets and points.
+        int tickets = 0;
+        int points = 0;
+
+
+        //counting the number of available slots.
+        for (ItemStack item: inv.getContents()) {
+            try{
+                if(item.getItemMeta().getDisplayName().equals(MMDisplayName)){
+                    tickets += item.getAmount();
+                    item.setType(Material.AIR);
+                }
+
+            }catch (Exception e){
+            }
+        }
+
+        points = tickets * 10;
+
+        //Initializing the message to be sent to the player
+        String ReturnMessage;
+
+        if(ConvertTickets > tickets){
+            //Create the message to be sent to the player
+            ReturnMessage = "&c&lオンタイムチケットが足りません。" + ConvertTickets + "枚以上のオンタイムチケットをインベントリに入れてください。";
+
+            //Return the message to be sent to the player
+            return ReturnMessage;
+        }
+        else{
+            //Give player ontime points.
+            getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
+
+            //Create the message to be sent to the player
+            ReturnMessage = "オンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+
+            //Return the message to be sent to the player
+            return ReturnMessage;
+        }
     }
 }
