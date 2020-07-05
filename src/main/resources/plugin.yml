@@ -10,12 +10,21 @@ commands:
     aliases: [to]
     permission: tradeontime.tradeontime
     usage: 例：/tradeontime ポイント数
+  tradeticket:
+    description: 所持している全チケットをオンタイムポイントに変換する。
+    aliases: [tt]
+    permission: tradeontime.tradeticket
+    usage: 例：/tradeticket
 
 permissions:
   tradeontime.*:
     description: 全tradeontimeコマンドへのアクセス権限
     children:
       tradeontime.tradeontime: true
+      tradeontime.tradeticket: true
   tradeontime.tradeontime:
+    description: オンタイムポイントをオンタイムチケットに変換することが可能になる。
+    default: true
+  tradeontime.tradeticket:
     description: オンタイムポイントをオンタイムチケットに変換することが可能になる。
     default: true
