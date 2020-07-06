@@ -171,13 +171,13 @@ public class OntimeTicketToOntime implements CommandExecutor {
             }
         }
 
-        points = initialtickets * 10;
+        points = ConvertTickets * 10;
 
         //Give player ontime points.
         getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
 
         //Create the message to be sent to the player
-        ReturnMessage = "&bオンタイムチケット" + initialtickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+        ReturnMessage = "&bオンタイムチケット" + ConvertTickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
 
         //Return the message to be sent to the player
         return ReturnMessage;
