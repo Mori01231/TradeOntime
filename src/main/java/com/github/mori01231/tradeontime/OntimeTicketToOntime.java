@@ -39,7 +39,9 @@ public class OntimeTicketToOntime implements CommandExecutor {
                     //Player doesn't have enough tickets
                     if (OntimeTickets(player) < ConvertTickets){
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットが足りません。" + ConvertTickets + "枚以上のオンタイムチケットをインベントリに入れてください。"));
-                    }else{
+                    }
+                    //Player has enough tickets
+                    else{
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', ConvertNumberOfOntimeTickets(player, ConvertTickets)));
                     }
                 }
@@ -98,7 +100,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
         int tickets = 0;
         int points = 0;
 
-        //counting the number of available slots.
+        //counting and deleting tickets.
         for (ItemStack item: inv.getContents()) {
             try{
                 if(item.getItemMeta().getDisplayName().equals(MMDisplayName)){
@@ -130,44 +132,55 @@ public class OntimeTicketToOntime implements CommandExecutor {
         //get player inventory.
         Inventory inv = player.getInventory();
 
-        //initializing counter for tickets and points.
-        int tickets = 0;
-        int points = 0;
-
-
-        //counting the number of available slots.
-        for (ItemStack item: inv.getContents()) {
-            try{
-                if(item.getItemMeta().getDisplayName().equals(MMDisplayName)){
-                    tickets += item.getAmount();
-                    item.setType(Material.AIR);
-                }
-
-            }catch (Exception e){
-            }
-        }
-
-        points = tickets * 10;
-
         //Initializing the message to be sent to the player
         String ReturnMessage;
 
-        if(ConvertTickets > tickets){
+        //initializing counter for tickets and points.
+        int initialtickets = 0;
+        int UnconvertedTickets = 0;
+        int points = 0;
+
+        initialtickets = OntimeTickets(player);
+        UnconvertedTickets = initialtickets;
+
+        if (initialtickets < ConvertTickets){
             //Create the message to be sent to the player
             ReturnMessage = "&c&lオンタイムチケットが足りません。" + ConvertTickets + "枚以上のオンタイムチケットをインベントリに入れてください。";
 
             //Return the message to be sent to the player
             return ReturnMessage;
         }
-        else{
-            //Give player ontime points.
-            getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
 
-            //Create the message to be sent to the player
-            ReturnMessage = "&bオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+        //counting and deleting tickets.
+        for (ItemStack item: inv.getContents()) {
+            try{
+                if(item.getItemMeta().getDisplayName().equals(MMDisplayName)){
+                    //Full stack can be converted
+                    if (item.getAmount() <= UnconvertedTickets){
+                        UnconvertedTickets -= item.getAmount();
+                        item.setType(Material.AIR);
+                    }
+                    //Only part of stack can be converted
+                    else{
+                        item.setAmount(item.getAmount() - UnconvertedTickets);
+                        UnconvertedTickets = 0;
+                    }
+                }
 
-            //Return the message to be sent to the player
-            return ReturnMessage;
+            }catch (Exception e){
+            }
         }
+
+        points = initialtickets * 10;
+
+        //Give player ontime points.
+        getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
+
+        //Create the message to be sent to the player
+        ReturnMessage = "&bオンタイムチケット" + initialtickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
+
+        //Return the message to be sent to the player
+        return ReturnMessage;
+
     }
 }
