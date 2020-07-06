@@ -141,7 +141,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
         int points = 0;
 
         initialtickets = OntimeTickets(player);
-        UnconvertedTickets = initialtickets;
+        UnconvertedTickets = ConvertTickets;
 
         if (initialtickets < ConvertTickets){
             //Create the message to be sent to the player
