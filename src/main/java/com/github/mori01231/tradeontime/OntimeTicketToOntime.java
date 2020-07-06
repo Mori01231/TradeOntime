@@ -105,7 +105,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
             try{
                 if(item.getItemMeta().getDisplayName().equals(MMDisplayName)){
                     tickets += item.getAmount();
-                    item.setType(Material.AIR);
+                    item.setAmount(0);
                 }
 
             }catch (Exception e){
@@ -158,7 +158,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
                     //Full stack can be converted
                     if (item.getAmount() <= UnconvertedTickets){
                         UnconvertedTickets -= item.getAmount();
-                        item.setType(Material.AIR);
+                        item.setAmount(0);
                     }
                     //Only part of stack can be converted
                     else{
