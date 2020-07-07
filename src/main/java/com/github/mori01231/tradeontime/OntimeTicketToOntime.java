@@ -33,6 +33,17 @@ public class OntimeTicketToOntime implements CommandExecutor {
             }
             //Convert ontime tickets in inventory to ontime points up until the given number.
             else{
+                try{
+                    if(Integer.valueOf(args[0]) < 0){
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するオンタイムチケットの枚数は正の整数で指定してください。"));
+                        return true;
+                    }
+                }catch(Exception e){
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l変換するオンタイムチケットの枚数は正の整数で指定してください。"));
+                    return true;
+                }
+
+
                 //Player has at least 1 ontime ticket in their inventory
                 if(OntimeTickets(player) > 0){
                     Integer ConvertTickets = Integer.valueOf(args[0]);
