@@ -9,12 +9,12 @@ commands:
     description: オンタイムポイントをオンタイムチケットに変換する
     aliases: [ott]
     permission: tradeontime.ontimetoticket
-    usage: 例：/ontimetoticket ポイント数
+    usage: 例：/ott ポイント数
   tickettoontime:
     description: 所持している全チケットをオンタイムポイントに変換する。
     aliases: [tto]
     permission: tradeontime.tickettoontime
-    usage: 例：/tickettoontime
+    usage: 例：/tto
 
 permissions:
   tradeontime.*:
