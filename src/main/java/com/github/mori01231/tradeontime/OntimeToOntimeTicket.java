@@ -21,7 +21,9 @@ public class OntimeToOntimeTicket implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
 
+
         if (sender instanceof Player){
+            int pointsPerTicket = TradeOntime.getInstance().getConfig().getInt("PointsPerTicket");
             if(args.length == 1) {
 
                 Player player = (Player) sender;
@@ -47,22 +49,22 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 //points was less than 10
                 if (haspoints < 10){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが10未満のためオンタイムチケットへの変換が出来ません。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
                     return false;
                 }
 
                 //Convert to ontime tickets
                 if (points <= haspoints){
-                    int takepoints = points - (points % 10);
+                    int takepoints = points - (points % pointsPerTicket);
                     System.out.println(takepoints);
 
-                    //points was between 0 and 10
+                    //points was between 0 and pointsPerTicket
                     if(takepoints == 0){
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは10以上の整数で指定してください。"));
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + pointsPerTicket + "以上の整数で指定してください。"));
                         return false;
                     }
 
-                    int giveitems = takepoints/10;
+                    int giveitems = takepoints/pointsPerTicket;
                     int RequiredSlots = 100;
 
                     if (giveitems % 64 == 0){
@@ -86,7 +88,7 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                 }
                 //Has less points than the points in argument
                 else{
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下かつ10以上の整数で指定してください。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下かつ" + pointsPerTicket + "以上の整数で指定してください。"));
                     return false;
                 }
             }
@@ -98,16 +100,16 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 int haspoints = PlayerPoints(player);
 
-                int takepoints = haspoints - (haspoints % 10);
+                int takepoints = haspoints - (haspoints % pointsPerTicket);
                 System.out.println(takepoints);
 
-                //points was between 0 and 10
+                //points was between 0 and pointsPetTicket
                 if(takepoints == 0){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが10未満のためオンタイムチケットへの変換が出来ません。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
                     return false;
                 }
 
-                int giveitems = takepoints/10;
+                int giveitems = takepoints/pointsPerTicket;
                 int RequiredSlots = 100;
 
                 if (giveitems % 64 == 0){
@@ -118,7 +120,7 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 //If the players doesn't have enough slots, no transaction
                 if (AvailableSlots(player) < RequiredSlots) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player)*640 + "ポイントまでしか変換できません。"));
+                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player) * 64 * pointsPerTicket + "ポイントまでしか変換できません。"));
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
                     return false;
                 }
