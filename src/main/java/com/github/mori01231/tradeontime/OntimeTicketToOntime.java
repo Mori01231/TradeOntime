@@ -11,8 +11,11 @@ import org.bukkit.inventory.ItemStack;
 import static org.bukkit.Bukkit.getServer;
 
 public class OntimeTicketToOntime implements CommandExecutor {
+    int pointsPerTicket = TradeOntime.getInstance().getConfig().getInt("PointsPerTicket");
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
 
         //Executed by Player
         if (sender instanceof Player){
@@ -122,7 +125,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
             }
         }
 
-        points = tickets * 10;
+        points = tickets * pointsPerTicket;
 
         //Give player ontime points.
         getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
@@ -181,7 +184,7 @@ public class OntimeTicketToOntime implements CommandExecutor {
             }
         }
 
-        points = ConvertTickets * 10;
+        points = ConvertTickets * pointsPerTicket;
 
         //Give player ontime points.
         getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);

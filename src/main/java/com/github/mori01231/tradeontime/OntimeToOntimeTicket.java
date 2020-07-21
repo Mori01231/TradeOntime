@@ -47,8 +47,8 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                 haspoints = PlayerPoints(player);
 
-                //points was less than 10
-                if (haspoints < 10){
+                //points was less than pointsPerTicket
+                if (haspoints < pointsPerTicket){
                     sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
                     return false;
                 }
