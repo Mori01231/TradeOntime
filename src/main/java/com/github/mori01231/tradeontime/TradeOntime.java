@@ -1,6 +1,5 @@
 package com.github.mori01231.tradeontime;
 
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TradeOntime extends JavaPlugin {
@@ -16,10 +15,9 @@ public final class TradeOntime extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("BetaTest has been enabled.");
+        getLogger().info("TradeOntime has been enabled.");
         this.getCommand("ontimetoticket").setExecutor(new OntimeToOntimeTicket());
         this.getCommand("tickettoontime").setExecutor(new OntimeTicketToOntime());
-
 
         this.saveDefaultConfig();
     }

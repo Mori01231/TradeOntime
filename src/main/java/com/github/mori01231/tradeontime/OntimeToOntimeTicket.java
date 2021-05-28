@@ -1,6 +1,6 @@
 package com.github.mori01231.tradeontime;
 
-import com.github.mori01231.tradeontime.utils.MessageInterceptingCommandRunner;
+import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,16 +11,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import static org.bukkit.Bukkit.getLogger;
-import static org.bukkit.Bukkit.getServer;
+import static org.bukkit.Bukkit.*;
 
 public class OntimeToOntimeTicket implements CommandExecutor {
 
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-
 
         if (sender instanceof Player){
             int pointsPerTicket = TradeOntime.getInstance().getConfig().getInt("PointsPerTicket");
@@ -30,8 +27,8 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                 String PlayerName = player.getName();
                 String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
 
-                int points = 0;
-                int haspoints;
+                int points;
+
                 try{
                     points = Integer.parseInt(args[0]);
                 }catch(Exception e){
@@ -45,23 +42,80 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                     return false;
                 }
 
-                haspoints = PlayerPoints(player);
+                PlayerPoints.getInstance().getAPI().lookAsync(player.getUniqueId()).thenAccept(haspoints -> {
+                    //points was less than pointsPerTicket
+                    if (haspoints < pointsPerTicket){
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
+                        return;
+                    }
 
-                //points was less than pointsPerTicket
-                if (haspoints < pointsPerTicket){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
-                    return false;
-                }
+                    //Convert to ontime tickets
+                    if (points <= haspoints){
+                        int takepoints = points - (points % pointsPerTicket);
+                        getLogger().info(String.valueOf(takepoints));
 
-                //Convert to ontime tickets
-                if (points <= haspoints){
-                    int takepoints = points - (points % pointsPerTicket);
+                        //points was between 0 and pointsPerTicket
+                        if(takepoints == 0){
+                            Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + pointsPerTicket + "以上の整数で指定してください。"));
+                            });
+                            return;
+                        }
+
+                        int giveitems = takepoints/pointsPerTicket;
+                        int RequiredSlots = 100;
+
+                        if (giveitems % 64 == 0){
+                            RequiredSlots = giveitems / 64;
+                        }else{
+                            RequiredSlots = (giveitems - (giveitems % 64) + 64) / 64;
+                        }
+                        getLogger().info("slots " + RequiredSlots);
+                        //If the players doesn't have enough slots, no transaction
+                        if (AvailableSlots(player) < RequiredSlots) {
+                            Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあります。"));
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
+                            });
+                            return;
+                        }
+
+                        // Drop items after switching back to the main thread
+                        Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                            //Actual transaction
+                            getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                            getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                            getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
+                        });
+                    }
+
+                    //Has less points than the points in argument
+                    else{
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下かつ" + pointsPerTicket + "以上の整数で指定してください。"));
+                        return;
+                    }
+                });
+
+
+            }
+            //No points argument
+            else if(args.length == 0){
+                Player player = (Player) sender;
+                String PlayerName = player.getName();
+                String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
+
+                //int haspoints = PlayerPoints(player);
+                PlayerPoints.getInstance().getAPI().lookAsync(player.getUniqueId()).thenAccept(haspoints -> {
+                    int takepoints = haspoints - (haspoints % pointsPerTicket);
                     System.out.println(takepoints);
 
-                    //points was between 0 and pointsPerTicket
+                    //points was between 0 and pointsPetTicket
                     if(takepoints == 0){
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + pointsPerTicket + "以上の整数で指定してください。"));
-                        return false;
+                        Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
+                        });
+                        return;
                     }
 
                     int giveitems = takepoints/pointsPerTicket;
@@ -75,61 +129,26 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
                     //If the players doesn't have enough slots, no transaction
                     if (AvailableSlots(player) < RequiredSlots) {
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあります。"));
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
-                        return false;
+                        Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player) * 64 * pointsPerTicket + "ポイントまでしか変換できません。"));
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
+                        });
+                        return;
                     }
 
-                    //Actual transaction
-                    getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
-                    getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
-                    getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
-                }
-                //Has less points than the points in argument
-                else{
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムポイントは" + haspoints + "以下かつ" + pointsPerTicket + "以上の整数で指定してください。"));
-                    return false;
-                }
-            }
-            //No points argument
-            else if(args.length == 0){
-                Player player = (Player) sender;
-                String PlayerName = player.getName();
-                String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
+                    // Drop items after switching back to the main thread
+                    Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                        //Actual transaction
+                        getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                        getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                        getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
+                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
 
-                int haspoints = PlayerPoints(player);
+                    });
+                });
 
-                int takepoints = haspoints - (haspoints % pointsPerTicket);
-                System.out.println(takepoints);
 
-                //points was between 0 and pointsPetTicket
-                if(takepoints == 0){
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lあなたの所持オンタイムポイントが" + pointsPerTicket + "未満のためオンタイムチケットへの変換が出来ません。"));
-                    return false;
-                }
 
-                int giveitems = takepoints/pointsPerTicket;
-                int RequiredSlots = 100;
-
-                if (giveitems % 64 == 0){
-                    RequiredSlots = giveitems / 64;
-                }else{
-                    RequiredSlots = (giveitems - (giveitems % 64) + 64) / 64;
-                }
-
-                //If the players doesn't have enough slots, no transaction
-                if (AvailableSlots(player) < RequiredSlots) {
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&l現在インベントリには" + AvailableSlots(player) + "スロットの空きがあり、" + AvailableSlots(player) * 64 * pointsPerTicket + "ポイントまでしか変換できません。"));
-                    sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&c&lオンタイムチケットがインベントリに入りきりません。インベントリに空きを増やしたうえで再度コマンドを実行してください。"));
-                    return false;
-                }
-
-                //Actual transaction
-                getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
-                getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
-                getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
             }
         }
         //Can't convert tickets from console
@@ -172,28 +191,12 @@ public class OntimeToOntimeTicket implements CommandExecutor {
     }
 
     public int PlayerPoints(Player player){
+        int haspoints = 0;
 
-        String PlayerName = player.getName();
-        String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
-        String originalOutput;
-        String pointsholder = "";
-
-        int points = 0;
-        int haspoints;
-
-        //Get the points of the player.
-        final MessageInterceptingCommandRunner cmdRunner = new MessageInterceptingCommandRunner(Bukkit.getConsoleSender());
-        Bukkit.dispatchCommand(cmdRunner, "points look " + PlayerName);
-
-        //parse the returned string and make it a single integer of points
-        originalOutput = cmdRunner.getMessageLogStripColor();
-        originalOutput = originalOutput.replace("\n", "").replace("\r", "");
-        pointsholder = originalOutput.substring(27 + PlayerName.length());
-        haspoints = Integer.parseInt(pointsholder.substring(0, pointsholder.length() - 7));
-
-        // You can then reset the message buffer with the following and re-use the the cmdRunner to run more commands - or just let all the outputs concatenate together
-        cmdRunner.clearMessageLog();
-
+        if (PlayerPoints.getInstance().getAPI() != null) {
+            haspoints = PlayerPoints.getInstance().getAPI().look(player.getUniqueId());
+            getLogger().info("Has " + haspoints + " points.");
+        }
         return haspoints;
     }
 }
