@@ -21,10 +21,12 @@ public class OntimeToOntimeTicket implements CommandExecutor {
 
         if (sender instanceof Player){
             int pointsPerTicket = TradeOntime.getInstance().getConfig().getInt("PointsPerTicket");
-            if(args.length == 1) {
+            Player player = (Player) sender;
+            String PlayerName = player.getName();
+            Boolean UseCommandForOntime = TradeOntime.getInstance().getConfig().getBoolean("UseCommandForOntimeItem");
+            String OntimeTicketGiveCommand = "minecraft:give " + PlayerName + " paper{display:{Name:'{\"text\":\"オンタイムチケット\",\"color\":\"green\"}',Lore:['{\"text\":\"ログインしていると一定時間ごとにもらえる。\",\"color\":\"white\"}','{\"text\":\"換金、特殊アイテムとの交換等に使える。\",\"color\":\"white\"}']},HideFlags:1,Enchantments:[{id:\"minecraft:unbreaking\",lvl:1s}]} ";
 
-                Player player = (Player) sender;
-                String PlayerName = player.getName();
+            if(args.length == 1) {
                 String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
 
                 int points;
@@ -83,8 +85,13 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                         // Drop items after switching back to the main thread
                         Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
                             //Actual transaction
-                            getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
-                            getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                            if(UseCommandForOntime){
+                                getServer().dispatchCommand(getServer().getConsoleSender(), OntimeTicketGiveCommand + giveitems);
+                                getLogger().info(PlayerName + "にオンタイムチケットを " + giveitems + " 個与えました。");
+                            }else{
+                                getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                                getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                            }
                             getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
                             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
                         });
@@ -101,8 +108,6 @@ public class OntimeToOntimeTicket implements CommandExecutor {
             }
             //No points argument
             else if(args.length == 0){
-                Player player = (Player) sender;
-                String PlayerName = player.getName();
                 String MMItemName = TradeOntime.getInstance().getConfig().getString("MythicMobsItemName");
 
                 //int haspoints = PlayerPoints(player);
@@ -139,8 +144,13 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                     // Drop items after switching back to the main thread
                     Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
                         //Actual transaction
-                        getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
-                        getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                        if(UseCommandForOntime){
+                            getServer().dispatchCommand(getServer().getConsoleSender(), OntimeTicketGiveCommand + giveitems);
+                            getLogger().info(PlayerName + "にオンタイムチケットを " + giveitems + " 個与えました。");
+                        }else{
+                            getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                            getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                        }
                         getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
                         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
 

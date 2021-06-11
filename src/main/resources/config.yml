@@ -3,6 +3,9 @@
 #オンタイムチケットのMythicMobsにおけるアイテム名。空白の場合オンタイムポイントをオンタイムチケットに変換できなくなります。
 MythicMobsItemName: ontime_ticket
 
+#オンタイムチケットをMythicMobsではなくコマンドで配布する場合 true
+UseCommandForOntimeItem: false
+
 #オンタイムチケットの表示名。文字コードは&a形式ではなく§a形式で記入してね。
 MythicMobsDisplayName: §aオンタイムチケット
 
