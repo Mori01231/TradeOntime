@@ -82,18 +82,24 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                             return;
                         }
 
-                        // Drop items after switching back to the main thread
-                        Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
-                            //Actual transaction
-                            if(UseCommandForOntime){
-                                getServer().dispatchCommand(getServer().getConsoleSender(), OntimeTicketGiveCommand + giveitems);
-                                getLogger().info(PlayerName + "にオンタイムチケットを " + giveitems + " 個与えました。");
-                            }else{
-                                getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
-                                getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
-                            }
-                            getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
-                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
+                        PlayerPoints.getInstance().getAPI().takeAsync(player.getUniqueId(), takepoints).thenAccept(result -> {
+                            // Drop items after switching back to the main thread
+                            Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                                if (!result) {
+                                    sender.sendMessage(ChatColor.RED + "オンタイムポイントの変換に失敗しました。");
+                                    getLogger().severe(PlayerName + "のオンタイムポイント->チケットの変換に失敗しました。(" + takepoints + "ポイント)");
+                                    return;
+                                }
+                                //Actual transaction
+                                if(UseCommandForOntime){
+                                    getServer().dispatchCommand(getServer().getConsoleSender(), OntimeTicketGiveCommand + giveitems);
+                                    getLogger().info(PlayerName + "にオンタイムチケットを " + giveitems + " 個与えました。");
+                                }else{
+                                    getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                                    getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                                }
+                                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
+                            });
                         });
                     }
 
@@ -141,19 +147,24 @@ public class OntimeToOntimeTicket implements CommandExecutor {
                         return;
                     }
 
-                    // Drop items after switching back to the main thread
-                    Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
-                        //Actual transaction
-                        if(UseCommandForOntime){
-                            getServer().dispatchCommand(getServer().getConsoleSender(), OntimeTicketGiveCommand + giveitems);
-                            getLogger().info(PlayerName + "にオンタイムチケットを " + giveitems + " 個与えました。");
-                        }else{
-                            getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
-                            getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
-                        }
-                        getServer().dispatchCommand(getServer().getConsoleSender(), "points take " + PlayerName + " " + takepoints);
-                        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
-
+                    PlayerPoints.getInstance().getAPI().takeAsync(player.getUniqueId(), takepoints).thenAccept(result -> {
+                        // Drop items after switching back to the main thread
+                        Bukkit.getScheduler().runTask(TradeOntime.getInstance(), () -> {
+                            if (!result) {
+                                sender.sendMessage(ChatColor.RED + "オンタイムポイントの変換に失敗しました。");
+                                getLogger().severe(PlayerName + "のオンタイムポイント->チケットの変換に失敗しました。(" + takepoints + "ポイント)");
+                                return;
+                            }
+                            //Actual transaction
+                            if(UseCommandForOntime){
+                                getServer().dispatchCommand(getServer().getConsoleSender(), OntimeTicketGiveCommand + giveitems);
+                                getLogger().info(PlayerName + "にオンタイムチケットを " + giveitems + " 個与えました。");
+                            }else{
+                                getServer().dispatchCommand(getServer().getConsoleSender(), "mm i give " + PlayerName + " " + MMItemName + " " + giveitems);
+                                getLogger().info(PlayerName + "にMMアイテム " + MMItemName + " を " + giveitems + " 個与えました。");
+                            }
+                            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&b" + takepoints + " オンタイムポイントをオンタイムチケット " + giveitems + " 枚に変換しました。"));
+                        });
                     });
                 });
 

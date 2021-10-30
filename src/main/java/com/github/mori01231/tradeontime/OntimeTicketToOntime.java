@@ -1,5 +1,6 @@
 package com.github.mori01231.tradeontime;
 
+import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import static org.bukkit.Bukkit.getLogger;
 import static org.bukkit.Bukkit.getServer;
 
 public class OntimeTicketToOntime implements CommandExecutor {
@@ -128,7 +130,13 @@ public class OntimeTicketToOntime implements CommandExecutor {
         points = tickets * pointsPerTicket;
 
         //Give player ontime points.
-        getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
+        int finalPoints = points;
+        PlayerPoints.getInstance().getAPI().giveAsync(player.getUniqueId(), points).thenAccept(result -> {
+            if (!result) {
+                player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
+                getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
+            }
+        });
 
         //Create the message to be sent to the player
         String ReturnMessage = "&bオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
@@ -187,7 +195,11 @@ public class OntimeTicketToOntime implements CommandExecutor {
         points = ConvertTickets * pointsPerTicket;
 
         //Give player ontime points.
-        getServer().dispatchCommand(getServer().getConsoleSender(), "points give " + player.getName() + " " + points);
+        int finalPoints = points;
+        PlayerPoints.getInstance().getAPI().giveAsync(player.getUniqueId(), points).thenAccept(result -> {
+            if (!result) player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
+            getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
+        });
 
         //Create the message to be sent to the player
         ReturnMessage = "&bオンタイムチケット" + ConvertTickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
