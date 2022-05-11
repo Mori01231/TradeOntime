@@ -131,12 +131,11 @@ public class OntimeTicketToOntime implements CommandExecutor {
 
         //Give player ontime points.
         int finalPoints = points;
-        PlayerPoints.getInstance().getAPI().giveAsync(player.getUniqueId(), points).thenAccept(result -> {
-            if (!result) {
-                player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
-                getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
-            }
-        });
+        boolean result = PlayerPoints.getInstance().getAPI().give(player.getUniqueId(), points);
+        if (!result) {
+            player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
+            getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
+        }
 
         //Create the message to be sent to the player
         String ReturnMessage = "&bオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
@@ -196,10 +195,9 @@ public class OntimeTicketToOntime implements CommandExecutor {
 
         //Give player ontime points.
         int finalPoints = points;
-        PlayerPoints.getInstance().getAPI().giveAsync(player.getUniqueId(), points).thenAccept(result -> {
-            if (!result) player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
-            getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
-        });
+        boolean result = PlayerPoints.getInstance().getAPI().give(player.getUniqueId(), points);
+        if (!result) player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
+        getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
 
         //Create the message to be sent to the player
         ReturnMessage = "&bオンタイムチケット" + ConvertTickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";

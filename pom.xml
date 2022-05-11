@@ -6,7 +6,7 @@
 
     <groupId>com.github.Mori01231</groupId>
     <artifactId>TradeOntime</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>TradeOntime</name>
@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.black_ixx</groupId>
             <artifactId>playerpoints</artifactId>
-            <version>3.0.1</version>
+            <version>3.2.3</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
