@@ -1,6 +1,7 @@
 package com.github.mori01231.tradeontime;
 
 import org.black_ixx.playerpoints.PlayerPoints;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -131,11 +132,13 @@ public class OntimeTicketToOntime implements CommandExecutor {
 
         //Give player ontime points.
         int finalPoints = points;
-        boolean result = PlayerPoints.getInstance().getAPI().give(player.getUniqueId(), points);
-        if (!result) {
-            player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
-            getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(TradeOntime.getInstance(), () -> {
+            boolean result = PlayerPoints.getInstance().getAPI().give(player.getUniqueId(), finalPoints);
+            if (!result) {
+                player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
+                getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
+            }
+        });
 
         //Create the message to be sent to the player
         String ReturnMessage = "&bオンタイムチケット" + tickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
@@ -195,9 +198,11 @@ public class OntimeTicketToOntime implements CommandExecutor {
 
         //Give player ontime points.
         int finalPoints = points;
-        boolean result = PlayerPoints.getInstance().getAPI().give(player.getUniqueId(), points);
-        if (!result) player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
-        getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
+        Bukkit.getScheduler().runTaskAsynchronously(TradeOntime.getInstance(), () -> {
+            boolean result = PlayerPoints.getInstance().getAPI().give(player.getUniqueId(), finalPoints);
+            if (!result) player.sendMessage(ChatColor.RED + "オンタイムポイント" + finalPoints + "ポイントの付与に失敗しました。");
+            getLogger().severe(player.getName() + "のチケット->オンタイムポイントの変換に失敗しました。(" + finalPoints + "ポイント)");
+        });
 
         //Create the message to be sent to the player
         ReturnMessage = "&bオンタイムチケット" + ConvertTickets + "枚をオンタイムポイント" + points + "ポイントに変換しました。";
